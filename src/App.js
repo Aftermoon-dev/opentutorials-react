@@ -1,5 +1,6 @@
 import logo from './logo.svg';
 import './App.css';
+import { useState } from 'react';
 
 // Component는 반드시 대문자로 시작해서 만들어야 함
 function Header(props) {
@@ -24,7 +25,8 @@ function Nav(props) {
       <a id={t.id} href={'/read/' + t.id} onClick={(event) => {
         event.preventDefault();
         // event.target -> Event을 유발시킨 Tag를 가져옴
-        props.onChangeMode(event.target.id);
+        // 태그에 들어간 값들은 숫자이더라도 문자열 타입을 가짐
+        props.onChangeMode(Number(event.target.id));
       }}>{t.title}</a>
     </li>)
   }
@@ -44,21 +46,45 @@ function Article(props) {
 }
 
 function App() {
+  // useState는 배열을 Return함
+  // 0번째 -> 현재 상태 값
+  // 1번째 -> 상태의 값을 변경할 때 사용하는 Function
+  const [mode, setMode] = useState('WELCOME');
+  const [id, setId] = useState(null);
+
   const topics = [
     { id: 1, title: 'html', body: 'html is ...' },
     { id: 2, title: 'css', body: 'css is ...' },
     { id: 3, title: 'javascript', body: 'javascript is ...' }
   ];
 
+  let content = null;
+  if (mode === 'WELCOME') {
+    content = <Article title="Welcome!" body="Hello, Web"></Article>
+  } else if (mode === 'READ') {
+    let title, body = null;
+    for (let i = 0; i < topics.length; i++) {
+      console.log(topics[i].id, id);
+      if (topics[i].id === id) {
+        title = topics[i].title;
+        body = topics[i].body;
+      }
+    }
+    content = <Article title={title} body={body}></Article>
+  }
+
   return (
     <div>
       <Header title="WEB" onChangeMode={function () {
-        alert('Header');
+        // 상태를 변경할 때는 setMode를 호출하여 변경할 상태 값을 인자에 넣음
+        // 해당 함수가 실행되면 App Component가 다시 실행됨
+        setMode('WELCOME');
       }}></Header>
-      <Nav topics={topics} onChangeMode={(id) => {
-        alert(id);
+      <Nav topics={topics} onChangeMode={(_id) => {
+        setMode('READ');
+        setId(_id);
       }}></Nav>
-      <Article title="Welcome!" body="Hello, Web"></Article>
+      {content}
     </div >
   );
 }
