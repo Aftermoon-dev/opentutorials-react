@@ -5,7 +5,11 @@ import './App.css';
 function Header(props) {
   console.log('props', props);
   return <header>
-    <h1><a href="/">{props.title}</a></h1>
+    <h1><a href="/" onClick={function (event) {
+      // 기본 동작을 Prevent (방지) - 클릭해도 Reload가 일어나지 않게 됨
+      event.preventDefault();
+      props.onChangeMode();
+    }}>{props.title}</a></h1>
   </header>
 }
 
@@ -16,7 +20,13 @@ function Nav(props) {
     let t = props.topics[i];
     // 자동 생성되는 Child들에는 Unique한 Key Prop을 필수로 요구함
     // 여기서 Unique는 Global이 아닌 해당 List 내 (Local)에서 Unique하면 됨
-    lis.push(<li key={t.id}><a href={'/read/' + t.id}>{t.title}</a></li>)
+    lis.push(<li key={t.id}>
+      <a id={t.id} href={'/read/' + t.id} onClick={(event) => {
+        event.preventDefault();
+        // event.target -> Event을 유발시킨 Tag를 가져옴
+        props.onChangeMode(event.target.id);
+      }}>{t.title}</a>
+    </li>)
   }
 
   return <nav>
@@ -42,8 +52,12 @@ function App() {
 
   return (
     <div>
-      <Header title="WEB"></Header>
-      <Nav topics={topics}></Nav>
+      <Header title="WEB" onChangeMode={function () {
+        alert('Header');
+      }}></Header>
+      <Nav topics={topics} onChangeMode={(id) => {
+        alert(id);
+      }}></Nav>
       <Article title="Welcome!" body="Hello, Web"></Article>
     </div >
   );
