@@ -112,10 +112,29 @@ function App() {
       }
     }
     content = <Article title={title} body={body}></Article>
-    contextControl = <li><a href={"/update/" + id} onClick={event => {
-      event.preventDefault();
-      setMode('UPDATE');
-    }}>Update</a></li >
+
+    // 빈 Tag => 복수의 Tag를 엮기 위한 용도로 사용
+    contextControl = <>
+      <li>
+        <a href={"/update/" + id} onClick={event => {
+          event.preventDefault();
+          setMode('UPDATE');
+        }}>Update</a>
+      </li>
+      <li>
+        <input type="button" value="Delete" onClick={() => {
+          const newTopics = [];
+          for (let i = 0; i < topics.length; i++) {
+            if (topics[i].id !== id) {
+              newTopics.push(topics[i]);
+            }
+          }
+
+          setTopics(newTopics);
+          setMode('WELCOME');
+        }} />
+      </li>
+    </>
   }
   else if (mode === 'CREATE') {
     content = <Create onCreate={(_title, _body) => {
